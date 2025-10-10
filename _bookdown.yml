@@ -1,0 +1,5 @@
+output_dir: "book"
+delete_merged_file: true
+language:
+  ui:
+    chapter_name: "TEMA "

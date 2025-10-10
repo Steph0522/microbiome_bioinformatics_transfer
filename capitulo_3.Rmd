@@ -1,0 +1,169 @@
+---
+bibliography: references.bib
+---
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Remoción de primers 
+
+- Instalar librerías a usar en todo el flujo de trabajo
+
+```{r, eval=FALSE}
+install.packages("tidyverse")
+
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("phyloseq")
+BiocManager::install("Biostrings")
+BiocManager::install("dada2")
+BiocManager::install("ShortRead")
+
+```
+
+
+- Cargar librerías
+
+```{r}
+library(dada2)
+library(Biostrings)
+library(ShortRead)
+```
+
+- Primers y sus reversos complementarios
+
+```{r}
+# Primers usados en PCR
+FWD <- "CCTACGGGNGGCWGCAG"
+REV <- "GACTACHVGGGTATCTAATCC"
+
+allOrients <- function(primer) {
+  require(Biostrings)
+  dna <- DNAString(primer) 
+  orients <- c(Forward = dna, Complement = complement(dna), Reverse = reverse(dna), 
+               RevComp = reverseComplement(dna))
+  return(sapply(orients, toString))  # Convertir de nuevo a vector de caracteres
+}
+
+# Determinar todas las orientaciones posibles de los primers
+FWD.orients <- allOrients(FWD)
+REV.orients <- allOrients(REV)
+FWD.orients
+```
+- Filtrado previo para detección de primers
+
+```{r, eval=FALSE}
+#esta parte toma aprox: 9 min
+
+# Crear un directorio nuevo con filtrado 
+fnFs.filtN <- file.path(ruta_resultados, "filtN", basename(fnFs)) 
+fnRs.filtN <- file.path(ruta_resultados, "filtN", basename(fnRs))
+
+filterAndTrim(fnFs, fnFs.filtN, fnRs, fnRs.filtN, maxN = 0, multithread = TRUE)
+```
+
+- Detectar si hay primers presentes 
+
+```{r, eval=FALSE}
+primerHits <- function(primer, fn) {
+  # Cuenta el numero de lecturas en donde se encontraron primers
+  nhits <- vcountPattern(primer, sread(readFastq(fn)), fixed = FALSE)
+  return(sum(nhits > 0))
+}
+
+# Crear tabla para la deteccion de los primers
+primeres_detected <- rbind(FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.filtN[[1]]), 
+                           FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.filtN[[1]]), 
+                           REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.filtN[[1]]), 
+                           REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.filtN[[1]]))
+
+primeres_detected
+
+```
+```{r, eval=TRUE, echo=FALSE}
+#write.csv(primeres_detected, "primers_detected.csv")
+primers_detected = read.csv("primers_detected.csv", check.names = F)
+primers_detected
+```
+
+
+- Remoción de primers con cutadapt
+
+[Cutadapt](liga) es una herramienta que nos permitirá remover los primers que se encuentren aún en las secuencias.
+Este programa se debe descargar según el sistema operativo y colocar la ruta.
+
+Para correr cutadpat en R debemos instalar cutadapt y para usarlo en windows debemos instalar:
+
+- [Python3](https://www.python.org/downloads/release/python-3115/)
+- [Visual studio](https://visualstudio.microsoft.com/es/downloads/) con la opción de C++ y Python tools.
+
+Luego, abrimos la terminal de comandos de windows (cmd.exe) y corremos:
+```{bash, eval=FALSE}
+py -m pip install cutadapt
+```
+
+Si quedó bien instalada nos dará la versión instalada, con este código:
+
+```{bash, eval=FALSE}
+py -m cutadapt --version
+```
+
+```{r, eval=FALSE}
+#poner ruta aquí
+cutadapt <- "C:/Users/shere/AppData/Local/Programs/Python/Python314/Scripts/cutadapt.exe" # en mi pc está aquí
+
+system2(cutadapt, args = "--version") 
+```
+
+
+```{r, eval=FALSE}
+#correr cutadapt
+path.cut <- file.path(ruta_fastq, "cutadapt")
+if(!dir.exists(path.cut)) dir.create(path.cut)
+fnFs.cut <- file.path(path.cut, basename(fnFs))
+fnRs.cut <- file.path(path.cut, basename(fnRs))
+
+FWD.RC <- dada2:::rc(FWD)
+REV.RC <- dada2:::rc(REV)
+R1.flags <- paste("-g", FWD, "-a", REV.RC) 
+R2.flags <- paste("-G", REV, "-A", FWD.RC) 
+
+# Correr Cutadapt
+for (i in seq_along(fnFs)) {
+  system2(
+    cutadapt,
+    args = c(
+      R1.flags,
+      R2.flags,
+      "-n",2,
+      "-o", fnFs.cut[i],
+      "-p",fnRs.cut[i],
+      fnFs.filtN[i],
+      fnRs.filtN[i],
+      "--minimum-length=1"
+    )
+  ) 
+}
+```
+
+- Detectar si fueron removidos los primers
+
+```{r, eval=FALSE}
+primers_detected_despues = rbind(
+  FWD.ForwardReads = sapply(FWD.orients, primerHits, fn = fnFs.cut[[1]]),
+  FWD.ReverseReads = sapply(FWD.orients, primerHits, fn = fnRs.cut[[1]]),
+  REV.ForwardReads = sapply(REV.orients, primerHits, fn = fnFs.cut[[1]]),
+  REV.ReverseReads = sapply(REV.orients, primerHits, fn = fnRs.cut[[1]])
+)
+
+
+```
+
+```{r, echo=FALSE}
+#write.csv(primers_detected_despues ,"primers_detected_despues.csv")
+primers_detected_despues = read.csv("primers_detected_despues.csv", check.names = F)
+primers_detected_despues 
+```
+
+
+
+

@@ -1,0 +1,16 @@
+bookdown::gitbook:
+  self_contained: true
+  css: style.css
+  config:
+    toc:
+      before: |
+        <li align="center"><b>MANUAL DEL TALLER</b></li>
+    download: ["pdf", "epub"]
+  fig_width: 8
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes
+bookdown::epub_book: default

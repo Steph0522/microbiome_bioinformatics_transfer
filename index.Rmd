@@ -1,0 +1,46 @@
+---
+title: 'Introducción práctica a la bioinformática de microbiotas en R y Rstudio'
+author: ""
+site: bookdown::bookdown_site
+documentclass: book
+url: 'https://comunidadbioinfo.github.io/templado_bookdown/'
+github-repo: "comunidadbioinfo/templado_bookdown"
+output:
+ bookdown::gitbook:
+  toc_depth: 3 
+  config:
+    sharing: null
+editor_options: 
+  markdown: 
+    wrap: 72
+bibliography: references.bib
+link-citations: yes
+---
+
+```{r knitr_opts, echo=FALSE}
+knitr::opts_chunk$set(
+  class.source = "script-source",
+  class.output = "script-output",
+  comment = NA
+)
+```
+
+
+#  `r fontawesome::fa("book", fill=" #722F37")`  Prefacio {-}
+
+Este libro contiene los temas y códigos a ver en el taller "Introducción práctica a la bioinformática de microbiotas en R y Rstudio". 
+
+## Objetivos del curso
+
+Que los asistentes adquieran habilidades prácticas y un conocimiento avanzado sobre herramientas de  bioinformática en el estudio de microbiotas usando R y Rstudio
+
+## Público a quien va dirigido
+
+Este curso está dirigido a estudiantes y profesionistas que están familiarizados con el uso de R y Rstudio y desean adquirir  habilidades en el  análisis de datos de secuenciación masiva y microbiotas usando R y Rstudio.
+
+En este curso aprenderás a usar un flujo de trabajo en el que se importarán, se procesarán y se analizarán datos de microbiomas de un estudio de transferencia materna de microbiota.
+
+## Pre-requisitos
+- Conocimiento básico en R y Rstudio
+- Equipo de cómputo (16GB de RAM y 1 GB de espacio) 
+

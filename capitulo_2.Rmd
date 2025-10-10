@@ -1,0 +1,37 @@
+---
+bibliography: references.bib
+---
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Importar secuencias a Rstudio
+
+Ya habiendo descargado las secuencias podemos importarlas a Rstudio para ser procesadas.
+
+```{r, eval=TRUE}
+# Ajuste de rutas y directorio de trabajo
+# ruta que contiene los archivos fastq
+ruta_fastq <- "C:/Users/shere/Documents/microbiome_bioinformatics_transfer/Datos/seqs_transfer/"
+
+# Crear carpeta para guardar resultados y ajusta directorio de trabajo
+ruta_resultados <-"C:/Users/shere/Documents/microbiome_bioinformatics_transfer/resultados"
+setwd(ruta_resultados)
+
+fnFs <- sort(list.files(ruta_fastq, pattern = "_1.fastq.gz", full.names = TRUE))
+fnRs <- sort(list.files(ruta_fastq, pattern = "_2.fastq.gz", full.names = TRUE))
+```
+
+
+```{r}
+head(fnFs)
+```
+
+
+```{r}
+head(fnRs)
+```
+
+```{r, echo=FALSE}
+setwd("../")
+
+```
+

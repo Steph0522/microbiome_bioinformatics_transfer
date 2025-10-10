@@ -1,0 +1,69 @@
+---
+bibliography: references.bib
+---
+# `r fontawesome::fa("book", fill="#722F37")` : Descargando las secuencias del NCBI
+
+Las secuencias que utilizaremos son del artículo:
+[Montoya-Ciriaco, Nina, et al. "Maternal transmission of bacterial microbiota during embryonic development in a viviparous lizard." Microbiology Spectrum 11.6 (2023): e01780-23.](https://journals.asm.org/doi/full/10.1128/spectrum.01780-23)
+
+
+Para descargar las secuencias del NCBI hay varias opciones:
+
+1. **[Página de NCBI](https://www.ncbi.nlm.nih.gov/sra/docs/sradownload)**: Esto lo podemos hacerde forma manual con el número de Bioproject, por ejemplo: [PRJNA963006](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA963006).
+
+
+2. **SRAtoolkit**: Para instalar esta herramienta, consultar esta [liga](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit).
+
+3. Hay otras herramientas como bash linux, aspera connect, qiime2-fondue, etc.
+
+
+
+
+## Descargar secuencias con SRAtoolkit
+
+- Archivo con los SRA ids, *sra_ids.txt*:
+
+```{bash, eval=FALSE}
+SRR1234567
+SRR1234568
+SRR1234569
+
+```
+
+
+```{bash, eval=FALSE}
+mkdir -p ./fastq_output
+
+while read srr; do
+    echo "Procesando $srr ..."
+
+    # 1. Descargar el .sra si no existe
+    if [ ! -f ./sra_files/$srr.sra ]; then
+        mkdir -p ./sra_files
+        prefetch -O ./sra_files $srr
+    fi
+
+    # 2. Convertir a FASTQ gzip
+    fasterq-dump ./sra_files/$srr.sra \
+        --split-files \
+        --origfmt \
+        --gzip \
+        -O ./fastq_output
+
+done < sra_ids.txt
+
+```
+
+
+## Descargando Secuencias ejemplo
+
+- Lo primero que haremos será crear un directorio donde depositaremos los archivos de ejemplo.
+
+Luego, vamos a descargar las secuencias que vamos a utilizar para este ejemplo y descomprimirlas.
+
+[Liga a las secuencias](https://drive.google.com/drive/folders/16rhfjOPm-qbxS_VpEGN8PCGN8_lcgHjm?usp=drive_link)
+
+
+::: {.alert .alert-success role="warning"}
+<i class="bi-check-circle-fill"></i> **Sugerencia**: Abrir un proyecto nuevo para este taller donde deposites las secuencias y vayas poniendo el script y código.
+::: 

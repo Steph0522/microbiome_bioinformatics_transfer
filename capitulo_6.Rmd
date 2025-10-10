@@ -1,0 +1,134 @@
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Análisis exploratorio
+
+- Primero vamos  a cargar las librerías a usar
+
+```{r, echo=FALSE}
+taxa = read.csv("taxa.csv", row.names = 1)
+taxa <- as.matrix(taxa)
+mode(taxa) <- "character"
+```
+
+
+```{r}
+library(phyloseq)
+library(Biostrings)
+library(tidyverse)
+theme_set(theme_bw())
+```
+
+- Cargamos la metadata y ordenamos
+
+```{r}
+samples.out <- rownames(seqtab_nochim)
+samdf <-read.delim("Datos/seqs_transfer/sra-metadata.tsv") %>% 
+  dplyr::rename(Origen="Host.Life.Stage..sample.", Tipo="Host.Tissue.Sampled..sample.")
+seqtab.nochim <- seqtab_nochim[match(samdf$ID, rownames(seqtab_nochim)),]
+rownames(samdf) <- samdf$ID
+```
+
+
+- Construimos un objeto phyloseq
+
+```{r}
+ps <- phyloseq(otu_table(seqtab.nochim, taxa_are_rows=FALSE), 
+               sample_data(samdf), 
+               tax_table(taxa))
+ps
+```
+
+- Renombramos los ids de las secuencias y agregamos el rep_seqs
+
+```{r}
+dna <- Biostrings::DNAStringSet(taxa_names(ps))
+names(dna) <- taxa_names(ps)
+ps <- merge_phyloseq(ps, dna)
+taxa_names(ps) <- paste0("ASV", seq(ntaxa(ps)))
+ps
+
+```
+
+## Composición taxonómica
+
+```{r}
+ps.prop <- transform_sample_counts(ps, function(OTU) OTU/sum(OTU))
+```
+
+
+### Phylum
+
+```{r}
+my_phyla <- tax_glom(ps.prop ,taxrank = "Phylum")
+my_bar_phyla <- plot_bar(my_phyla, fill="Phylum") + 
+facet_grid(~Origen+Tipo, scales="free_x")+
+  ggtitle("Abundancia relativa de Filos") 
+my_bar_phyla
+```
+
+### Class
+
+```{r}
+my_Class <- tax_glom(ps.prop ,taxrank = "Class")
+my_bar_Class <- plot_bar(my_Class, fill="Class") + 
+facet_grid(~Origen+Tipo, scales="free_x")+
+  ggtitle("Abundancia relativa de clases") 
+my_bar_Class
+```
+
+## Diversidad alfa
+
+- Primero hacemos subconjuntos del origen
+
+```{r}
+
+#madre
+madre <- subset_samples(ps, Origen=="adult")
+madre
+
+#embrion
+embrion <- subset_samples(ps, Origen=="embryo")
+embrion
+
+```
+- Graficamos la diversidad alfa
+
+```{r}
+plot_richness(madre, x="Tipo", measures=c("Observed","Shannon", "Simpson"), color="Tipo")
+
+```
+```{r}
+plot_richness(madre, x="Tipo", measures=c("Observed","Shannon", "Simpson"), color="Tipo")+
+  geom_boxplot()
+```
+
+```{r}
+plot_richness(embrion, x="Tipo", measures=c("Observed","Shannon", "Simpson"), color="Tipo")+
+  geom_boxplot()
+
+```
+- rarificar si es necesario
+
+```{r}
+#ps_rare <- rarefy_even_depth(ps_fil, sample.size = min(sample_sums(ps_fil)), rngseed = 19)
+#ps_rare
+```
+
+
+## Diversidad beta
+
+```{r}
+# Transformar la data  proporciones
+ps.prop <- transform_sample_counts(ps, function(otu) otu/sum(otu))
+ord.nmds.bray <- ordinate(ps.prop, method="NMDS", distance="bray")
+plot_ordination(ps.prop, ord.nmds.bray, color="Tipo", shape="Origen",title="Bray NMDS")
+```
+
+```{r}
+ord.nmds.jac <- ordinate(ps.prop, method="PCoA", distance="jaccard")
+plot_ordination(ps, ord.nmds.jac, color="Tipo", shape="Origen",title="Bray NMDS")
+```
+
+
+
+
