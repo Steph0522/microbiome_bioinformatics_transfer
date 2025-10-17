@@ -2016,7 +2016,13 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 <li class="chapter" data-level="6.1.2" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#class"><i class="fa fa-check"></i><b>6.1.2</b> Class</a></li>
 </ul></li>
 <li class="chapter" data-level="6.2" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#diversidad-alfa"><i class="fa fa-check"></i><b>6.2</b> Diversidad alfa</a></li>
-<li class="chapter" data-level="6.3" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#diversidad-beta"><i class="fa fa-check"></i><b>6.3</b> Diversidad beta</a></li>
+<li class="chapter" data-level="6.3" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#diversidad-beta"><i class="fa fa-check"></i><b>6.3</b> Diversidad beta</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#pre-procesamiento"><i class="fa fa-check"></i><b>6.3.1</b> Pre-procesamiento</a></li>
+<li class="chapter" data-level="6.3.2" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#diversidad-alpha"><i class="fa fa-check"></i><b>6.3.2</b> Diversidad alpha</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#diversidad-beta-1"><i class="fa fa-check"></i><b>6.4</b> Diversidad beta</a></li>
+<li class="chapter" data-level="6.5" data-path="análisis-exploratorio.html"><a href="análisis-exploratorio.html#composición"><i class="fa fa-check"></i><b>6.5</b> Composición</a></li>
 </ul></li>
 </ul>
 
@@ -2042,96 +2048,96 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 <div class="alert alert-info" role="alert">
 <p><i class="bi-clipboard-fill"></i> En la siguiente parte se descarga la base de datos de greengenes2 y se depura manualmente en R. Esta parte no la vamos a correr, solo dejamos el script para que lo intentes con más tiempo y disponibilidad.</p>
 </div>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r script-source"><code class="sourceCode r"><span id="cb39-1"><a href="asignación-taxonómica.html#cb39-1" tabindex="-1"></a><span class="co">#https://github.com/benjjneb/dada2/issues/1680#issuecomment-1724495374</span></span>
-<span id="cb39-2"><a href="asignación-taxonómica.html#cb39-2" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="asignación-taxonómica.html#cb39-3" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://ftp.microbio.me/greengenes_release/current/2024.09.backbone.full-length.fna.qza&quot;</span>, <span class="st">&quot;2024.09.backbone.full-length.fna.qza&quot;</span>)</span>
-<span id="cb39-4"><a href="asignación-taxonómica.html#cb39-4" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://ftp.microbio.me/greengenes_release/current/2024.09.backbone.tax.qza&quot;</span>,</span>
-<span id="cb39-5"><a href="asignación-taxonómica.html#cb39-5" tabindex="-1"></a>              <span class="st">&quot;2024.09.backbone.tax.qza&quot;</span>)</span>
-<span id="cb39-6"><a href="asignación-taxonómica.html#cb39-6" tabindex="-1"></a></span>
-<span id="cb39-7"><a href="asignación-taxonómica.html#cb39-7" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;2024.09.backbone.full-length.fna.qza&quot;</span>)</span>
-<span id="cb39-8"><a href="asignación-taxonómica.html#cb39-8" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;2024.09.backbone.tax.qza&quot;</span>)</span>
-<span id="cb39-9"><a href="asignación-taxonómica.html#cb39-9" tabindex="-1"></a></span>
-<span id="cb39-10"><a href="asignación-taxonómica.html#cb39-10" tabindex="-1"></a></span>
-<span id="cb39-11"><a href="asignación-taxonómica.html#cb39-11" tabindex="-1"></a>fn <span class="ot">&lt;-</span> <span class="st">&quot;5b42d9b6-2f24-4f01-b989-9b4dafca7d5e/data/dna-sequences.fasta&quot;</span></span>
-<span id="cb39-12"><a href="asignación-taxonómica.html#cb39-12" tabindex="-1"></a>txfn <span class="ot">&lt;-</span> <span class="st">&quot;b7c3e691-ea51-4547-94dd-f79f49e41a36//data/taxonomy.tsv&quot;</span></span>
-<span id="cb39-13"><a href="asignación-taxonómica.html#cb39-13" tabindex="-1"></a></span>
-<span id="cb39-14"><a href="asignación-taxonómica.html#cb39-14" tabindex="-1"></a>sq <span class="ot">&lt;-</span> <span class="fu">getSequences</span>(fn)</span>
-<span id="cb39-15"><a href="asignación-taxonómica.html#cb39-15" tabindex="-1"></a>tdf <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(txfn, <span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
-<span id="cb39-16"><a href="asignación-taxonómica.html#cb39-16" tabindex="-1"></a>tdf2 <span class="ot">&lt;-</span> tdf[<span class="fu">match</span>(<span class="fu">names</span>(sq), tdf<span class="sc">$</span>Feature.ID),]</span>
-<span id="cb39-17"><a href="asignación-taxonómica.html#cb39-17" tabindex="-1"></a>tax <span class="ot">&lt;-</span> tdf2[,<span class="dv">2</span>]</span>
-<span id="cb39-18"><a href="asignación-taxonómica.html#cb39-18" tabindex="-1"></a><span class="fu">names</span>(tax) <span class="ot">&lt;-</span> tdf2[,<span class="dv">1</span>]</span>
-<span id="cb39-19"><a href="asignación-taxonómica.html#cb39-19" tabindex="-1"></a></span>
-<span id="cb39-20"><a href="asignación-taxonómica.html#cb39-20" tabindex="-1"></a><span class="fu">identical</span>(<span class="fu">names</span>(sq), <span class="fu">names</span>(tax)) <span class="co"># TRUE</span></span>
-<span id="cb39-21"><a href="asignación-taxonómica.html#cb39-21" tabindex="-1"></a></span>
-<span id="cb39-22"><a href="asignación-taxonómica.html#cb39-22" tabindex="-1"></a>taxes <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(tax, <span class="st">&quot;; &quot;</span>)</span>
-<span id="cb39-23"><a href="asignación-taxonómica.html#cb39-23" tabindex="-1"></a>tax.depth <span class="ot">&lt;-</span> <span class="fu">sapply</span>(taxes, length)</span>
-<span id="cb39-24"><a href="asignación-taxonómica.html#cb39-24" tabindex="-1"></a><span class="fu">table</span>(tax.depth) </span>
-<span id="cb39-25"><a href="asignación-taxonómica.html#cb39-25" tabindex="-1"></a><span class="co"># Todas las taxonomias son de 7 niveles</span></span>
-<span id="cb39-26"><a href="asignación-taxonómica.html#cb39-26" tabindex="-1"></a><span class="co"># Nota: Las especies tienen generos con nombres duplicados en vez de especies</span></span>
-<span id="cb39-27"><a href="asignación-taxonómica.html#cb39-27" tabindex="-1"></a></span>
-<span id="cb39-28"><a href="asignación-taxonómica.html#cb39-28" tabindex="-1"></a><span class="co"># Remover el género de las especies</span></span>
-<span id="cb39-29"><a href="asignación-taxonómica.html#cb39-29" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">length</span>(taxes))) {</span>
-<span id="cb39-30"><a href="asignación-taxonómica.html#cb39-30" tabindex="-1"></a>  gen <span class="ot">&lt;-</span> taxes[[i]][[<span class="dv">6</span>]]</span>
-<span id="cb39-31"><a href="asignación-taxonómica.html#cb39-31" tabindex="-1"></a>  gen <span class="ot">&lt;-</span> <span class="fu">substr</span>(gen, <span class="dv">4</span>, <span class="fu">nchar</span>(gen))</span>
-<span id="cb39-32"><a href="asignación-taxonómica.html#cb39-32" tabindex="-1"></a>  taxes[[i]][[<span class="dv">7</span>]] <span class="ot">&lt;-</span> <span class="fu">gsub</span>(gen, <span class="st">&quot;&quot;</span>, taxes[[i]][[<span class="dv">7</span>]])</span>
-<span id="cb39-33"><a href="asignación-taxonómica.html#cb39-33" tabindex="-1"></a>  taxes[[i]][[<span class="dv">7</span>]] <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;__ &quot;</span>, <span class="st">&quot;__&quot;</span>, taxes[[i]][[<span class="dv">7</span>]])</span>
-<span id="cb39-34"><a href="asignación-taxonómica.html#cb39-34" tabindex="-1"></a>}</span>
-<span id="cb39-35"><a href="asignación-taxonómica.html#cb39-35" tabindex="-1"></a></span>
-<span id="cb39-36"><a href="asignación-taxonómica.html#cb39-36" tabindex="-1"></a>tax_pre <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;d__&quot;</span>, <span class="st">&quot;p__&quot;</span>, <span class="st">&quot;c__&quot;</span>, <span class="st">&quot;o__&quot;</span>, <span class="st">&quot;f__&quot;</span>, <span class="st">&quot;g__&quot;</span>, <span class="st">&quot;s__&quot;</span>)</span>
-<span id="cb39-37"><a href="asignación-taxonómica.html#cb39-37" tabindex="-1"></a>is.unassigned <span class="ot">&lt;-</span> <span class="fu">sapply</span>(taxes, <span class="cf">function</span>(tx) {</span>
-<span id="cb39-38"><a href="asignación-taxonómica.html#cb39-38" tabindex="-1"></a>  tx <span class="sc">==</span> tax_pre</span>
-<span id="cb39-39"><a href="asignación-taxonómica.html#cb39-39" tabindex="-1"></a>}) <span class="sc">|&gt;</span> <span class="fu">t</span>()</span>
-<span id="cb39-40"><a href="asignación-taxonómica.html#cb39-40" tabindex="-1"></a>tax.depth <span class="ot">&lt;-</span> <span class="fu">apply</span>(is.unassigned, <span class="dv">1</span>, <span class="cf">function</span>(isu) { <span class="fu">min</span>(<span class="fu">which</span>(isu)<span class="sc">-</span><span class="dv">1</span><span class="dt">L</span>, <span class="dv">7</span><span class="dt">L</span>) })</span>
-<span id="cb39-41"><a href="asignación-taxonómica.html#cb39-41" tabindex="-1"></a>tax.ids <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_along</span>(taxes), <span class="cf">function</span>(i) {</span>
-<span id="cb39-42"><a href="asignación-taxonómica.html#cb39-42" tabindex="-1"></a>  td <span class="ot">&lt;-</span> tax.depth[[i]]</span>
-<span id="cb39-43"><a href="asignación-taxonómica.html#cb39-43" tabindex="-1"></a>  id.str <span class="ot">&lt;-</span> <span class="fu">paste</span>(taxes[[i]][<span class="dv">1</span><span class="sc">:</span>td], <span class="at">collapse=</span><span class="st">&quot;;&quot;</span>)</span>
-<span id="cb39-44"><a href="asignación-taxonómica.html#cb39-44" tabindex="-1"></a>  id.str <span class="ot">&lt;-</span> <span class="fu">paste0</span>(id.str, <span class="st">&quot;;&quot;</span>) <span class="co"># Add terminal semicolon</span></span>
-<span id="cb39-45"><a href="asignación-taxonómica.html#cb39-45" tabindex="-1"></a>  id.str</span>
-<span id="cb39-46"><a href="asignación-taxonómica.html#cb39-46" tabindex="-1"></a>})</span>
-<span id="cb39-47"><a href="asignación-taxonómica.html#cb39-47" tabindex="-1"></a><span class="fu">names</span>(tax.ids) <span class="ot">&lt;-</span> <span class="fu">names</span>(taxes)</span>
-<span id="cb39-48"><a href="asignación-taxonómica.html#cb39-48" tabindex="-1"></a><span class="co"># Write out the training fasta file</span></span>
-<span id="cb39-49"><a href="asignación-taxonómica.html#cb39-49" tabindex="-1"></a>sq.out <span class="ot">&lt;-</span> sq</span>
-<span id="cb39-50"><a href="asignación-taxonómica.html#cb39-50" tabindex="-1"></a><span class="fu">names</span>(sq.out) <span class="ot">&lt;-</span> tax.ids</span>
-<span id="cb39-51"><a href="asignación-taxonómica.html#cb39-51" tabindex="-1"></a><span class="fu">writeFasta</span>(sq.out, <span class="st">&quot;greengenes2_trainset.fa.gz&quot;</span>, <span class="at">compress=</span><span class="cn">TRUE</span>)</span>
-<span id="cb39-52"><a href="asignación-taxonómica.html#cb39-52" tabindex="-1"></a><span class="co"># Sanity test the results of `assignTaxonomy` on this newly created training</span></span>
-<span id="cb39-53"><a href="asignación-taxonómica.html#cb39-53" tabindex="-1"></a>dada2<span class="sc">:::</span><span class="fu">tax.check</span>(<span class="st">&quot;greengenes2_trainset.fa.gz&quot;</span>, <span class="at">fn.test=</span><span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ten_16s.100.fa.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;dada2&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r script-source"><code class="sourceCode r"><span id="cb92-1"><a href="asignación-taxonómica.html#cb92-1" tabindex="-1"></a><span class="co">#https://github.com/benjjneb/dada2/issues/1680#issuecomment-1724495374</span></span>
+<span id="cb92-2"><a href="asignación-taxonómica.html#cb92-2" tabindex="-1"></a></span>
+<span id="cb92-3"><a href="asignación-taxonómica.html#cb92-3" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://ftp.microbio.me/greengenes_release/current/2024.09.backbone.full-length.fna.qza&quot;</span>, <span class="st">&quot;2024.09.backbone.full-length.fna.qza&quot;</span>)</span>
+<span id="cb92-4"><a href="asignación-taxonómica.html#cb92-4" tabindex="-1"></a><span class="fu">download.file</span>(<span class="st">&quot;http://ftp.microbio.me/greengenes_release/current/2024.09.backbone.tax.qza&quot;</span>,</span>
+<span id="cb92-5"><a href="asignación-taxonómica.html#cb92-5" tabindex="-1"></a>              <span class="st">&quot;2024.09.backbone.tax.qza&quot;</span>)</span>
+<span id="cb92-6"><a href="asignación-taxonómica.html#cb92-6" tabindex="-1"></a></span>
+<span id="cb92-7"><a href="asignación-taxonómica.html#cb92-7" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;2024.09.backbone.full-length.fna.qza&quot;</span>)</span>
+<span id="cb92-8"><a href="asignación-taxonómica.html#cb92-8" tabindex="-1"></a><span class="fu">unzip</span>(<span class="st">&quot;2024.09.backbone.tax.qza&quot;</span>)</span>
+<span id="cb92-9"><a href="asignación-taxonómica.html#cb92-9" tabindex="-1"></a></span>
+<span id="cb92-10"><a href="asignación-taxonómica.html#cb92-10" tabindex="-1"></a></span>
+<span id="cb92-11"><a href="asignación-taxonómica.html#cb92-11" tabindex="-1"></a>fn <span class="ot">&lt;-</span> <span class="st">&quot;5b42d9b6-2f24-4f01-b989-9b4dafca7d5e/data/dna-sequences.fasta&quot;</span></span>
+<span id="cb92-12"><a href="asignación-taxonómica.html#cb92-12" tabindex="-1"></a>txfn <span class="ot">&lt;-</span> <span class="st">&quot;b7c3e691-ea51-4547-94dd-f79f49e41a36//data/taxonomy.tsv&quot;</span></span>
+<span id="cb92-13"><a href="asignación-taxonómica.html#cb92-13" tabindex="-1"></a></span>
+<span id="cb92-14"><a href="asignación-taxonómica.html#cb92-14" tabindex="-1"></a>sq <span class="ot">&lt;-</span> <span class="fu">getSequences</span>(fn)</span>
+<span id="cb92-15"><a href="asignación-taxonómica.html#cb92-15" tabindex="-1"></a>tdf <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(txfn, <span class="at">sep=</span><span class="st">&quot;</span><span class="sc">\t</span><span class="st">&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>)</span>
+<span id="cb92-16"><a href="asignación-taxonómica.html#cb92-16" tabindex="-1"></a>tdf2 <span class="ot">&lt;-</span> tdf[<span class="fu">match</span>(<span class="fu">names</span>(sq), tdf<span class="sc">$</span>Feature.ID),]</span>
+<span id="cb92-17"><a href="asignación-taxonómica.html#cb92-17" tabindex="-1"></a>tax <span class="ot">&lt;-</span> tdf2[,<span class="dv">2</span>]</span>
+<span id="cb92-18"><a href="asignación-taxonómica.html#cb92-18" tabindex="-1"></a><span class="fu">names</span>(tax) <span class="ot">&lt;-</span> tdf2[,<span class="dv">1</span>]</span>
+<span id="cb92-19"><a href="asignación-taxonómica.html#cb92-19" tabindex="-1"></a></span>
+<span id="cb92-20"><a href="asignación-taxonómica.html#cb92-20" tabindex="-1"></a><span class="fu">identical</span>(<span class="fu">names</span>(sq), <span class="fu">names</span>(tax)) <span class="co"># TRUE</span></span>
+<span id="cb92-21"><a href="asignación-taxonómica.html#cb92-21" tabindex="-1"></a></span>
+<span id="cb92-22"><a href="asignación-taxonómica.html#cb92-22" tabindex="-1"></a>taxes <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(tax, <span class="st">&quot;; &quot;</span>)</span>
+<span id="cb92-23"><a href="asignación-taxonómica.html#cb92-23" tabindex="-1"></a>tax.depth <span class="ot">&lt;-</span> <span class="fu">sapply</span>(taxes, length)</span>
+<span id="cb92-24"><a href="asignación-taxonómica.html#cb92-24" tabindex="-1"></a><span class="fu">table</span>(tax.depth) </span>
+<span id="cb92-25"><a href="asignación-taxonómica.html#cb92-25" tabindex="-1"></a><span class="co"># Todas las taxonomias son de 7 niveles</span></span>
+<span id="cb92-26"><a href="asignación-taxonómica.html#cb92-26" tabindex="-1"></a><span class="co"># Nota: Las especies tienen generos con nombres duplicados en vez de especies</span></span>
+<span id="cb92-27"><a href="asignación-taxonómica.html#cb92-27" tabindex="-1"></a></span>
+<span id="cb92-28"><a href="asignación-taxonómica.html#cb92-28" tabindex="-1"></a><span class="co"># Remover el género de las especies</span></span>
+<span id="cb92-29"><a href="asignación-taxonómica.html#cb92-29" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="fu">seq</span>(<span class="fu">length</span>(taxes))) {</span>
+<span id="cb92-30"><a href="asignación-taxonómica.html#cb92-30" tabindex="-1"></a>  gen <span class="ot">&lt;-</span> taxes[[i]][[<span class="dv">6</span>]]</span>
+<span id="cb92-31"><a href="asignación-taxonómica.html#cb92-31" tabindex="-1"></a>  gen <span class="ot">&lt;-</span> <span class="fu">substr</span>(gen, <span class="dv">4</span>, <span class="fu">nchar</span>(gen))</span>
+<span id="cb92-32"><a href="asignación-taxonómica.html#cb92-32" tabindex="-1"></a>  taxes[[i]][[<span class="dv">7</span>]] <span class="ot">&lt;-</span> <span class="fu">gsub</span>(gen, <span class="st">&quot;&quot;</span>, taxes[[i]][[<span class="dv">7</span>]])</span>
+<span id="cb92-33"><a href="asignación-taxonómica.html#cb92-33" tabindex="-1"></a>  taxes[[i]][[<span class="dv">7</span>]] <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;__ &quot;</span>, <span class="st">&quot;__&quot;</span>, taxes[[i]][[<span class="dv">7</span>]])</span>
+<span id="cb92-34"><a href="asignación-taxonómica.html#cb92-34" tabindex="-1"></a>}</span>
+<span id="cb92-35"><a href="asignación-taxonómica.html#cb92-35" tabindex="-1"></a></span>
+<span id="cb92-36"><a href="asignación-taxonómica.html#cb92-36" tabindex="-1"></a>tax_pre <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;d__&quot;</span>, <span class="st">&quot;p__&quot;</span>, <span class="st">&quot;c__&quot;</span>, <span class="st">&quot;o__&quot;</span>, <span class="st">&quot;f__&quot;</span>, <span class="st">&quot;g__&quot;</span>, <span class="st">&quot;s__&quot;</span>)</span>
+<span id="cb92-37"><a href="asignación-taxonómica.html#cb92-37" tabindex="-1"></a>is.unassigned <span class="ot">&lt;-</span> <span class="fu">sapply</span>(taxes, <span class="cf">function</span>(tx) {</span>
+<span id="cb92-38"><a href="asignación-taxonómica.html#cb92-38" tabindex="-1"></a>  tx <span class="sc">==</span> tax_pre</span>
+<span id="cb92-39"><a href="asignación-taxonómica.html#cb92-39" tabindex="-1"></a>}) <span class="sc">|&gt;</span> <span class="fu">t</span>()</span>
+<span id="cb92-40"><a href="asignación-taxonómica.html#cb92-40" tabindex="-1"></a>tax.depth <span class="ot">&lt;-</span> <span class="fu">apply</span>(is.unassigned, <span class="dv">1</span>, <span class="cf">function</span>(isu) { <span class="fu">min</span>(<span class="fu">which</span>(isu)<span class="sc">-</span><span class="dv">1</span><span class="dt">L</span>, <span class="dv">7</span><span class="dt">L</span>) })</span>
+<span id="cb92-41"><a href="asignación-taxonómica.html#cb92-41" tabindex="-1"></a>tax.ids <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">seq_along</span>(taxes), <span class="cf">function</span>(i) {</span>
+<span id="cb92-42"><a href="asignación-taxonómica.html#cb92-42" tabindex="-1"></a>  td <span class="ot">&lt;-</span> tax.depth[[i]]</span>
+<span id="cb92-43"><a href="asignación-taxonómica.html#cb92-43" tabindex="-1"></a>  id.str <span class="ot">&lt;-</span> <span class="fu">paste</span>(taxes[[i]][<span class="dv">1</span><span class="sc">:</span>td], <span class="at">collapse=</span><span class="st">&quot;;&quot;</span>)</span>
+<span id="cb92-44"><a href="asignación-taxonómica.html#cb92-44" tabindex="-1"></a>  id.str <span class="ot">&lt;-</span> <span class="fu">paste0</span>(id.str, <span class="st">&quot;;&quot;</span>) <span class="co"># Add terminal semicolon</span></span>
+<span id="cb92-45"><a href="asignación-taxonómica.html#cb92-45" tabindex="-1"></a>  id.str</span>
+<span id="cb92-46"><a href="asignación-taxonómica.html#cb92-46" tabindex="-1"></a>})</span>
+<span id="cb92-47"><a href="asignación-taxonómica.html#cb92-47" tabindex="-1"></a><span class="fu">names</span>(tax.ids) <span class="ot">&lt;-</span> <span class="fu">names</span>(taxes)</span>
+<span id="cb92-48"><a href="asignación-taxonómica.html#cb92-48" tabindex="-1"></a><span class="co"># Write out the training fasta file</span></span>
+<span id="cb92-49"><a href="asignación-taxonómica.html#cb92-49" tabindex="-1"></a>sq.out <span class="ot">&lt;-</span> sq</span>
+<span id="cb92-50"><a href="asignación-taxonómica.html#cb92-50" tabindex="-1"></a><span class="fu">names</span>(sq.out) <span class="ot">&lt;-</span> tax.ids</span>
+<span id="cb92-51"><a href="asignación-taxonómica.html#cb92-51" tabindex="-1"></a><span class="fu">writeFasta</span>(sq.out, <span class="st">&quot;greengenes2_trainset.fa.gz&quot;</span>, <span class="at">compress=</span><span class="cn">TRUE</span>)</span>
+<span id="cb92-52"><a href="asignación-taxonómica.html#cb92-52" tabindex="-1"></a><span class="co"># Sanity test the results of `assignTaxonomy` on this newly created training</span></span>
+<span id="cb92-53"><a href="asignación-taxonómica.html#cb92-53" tabindex="-1"></a>dada2<span class="sc">:::</span><span class="fu">tax.check</span>(<span class="st">&quot;greengenes2_trainset.fa.gz&quot;</span>, <span class="at">fn.test=</span><span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ten_16s.100.fa.gz&quot;</span>, <span class="at">package=</span><span class="st">&quot;dada2&quot;</span>))</span></code></pre></div>
 <p>Te dejamos mejor la liga para que descargues la base de datos de referencia ya depurada en su última versión, <a href="https://drive.google.com/file/d/11NzusIlBFoX5zXBiG7Y8WJbqGYEdYyoo/view?usp=drive_link">Liga</a></p>
 <p>La descargamos y la ponemos en nuestro directorio de trabajo.</p>
 </div>
 <div id="asignación-taxonómica-1" class="section level2 hasAnchor" number="5.2">
 <h2><span class="header-section-number">5.2</span> Asignación taxonómica<a href="asignación-taxonómica.html#asignación-taxonómica-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r script-source"><code class="sourceCode r"><span id="cb40-1"><a href="asignación-taxonómica.html#cb40-1" tabindex="-1"></a><span class="co">#duración : aprox 7 min</span></span>
-<span id="cb40-2"><a href="asignación-taxonómica.html#cb40-2" tabindex="-1"></a></span>
-<span id="cb40-3"><a href="asignación-taxonómica.html#cb40-3" tabindex="-1"></a>classifier <span class="ot">&lt;-</span> <span class="st">&quot;greengenes2_trainset.fa.gz&quot;</span> </span>
-<span id="cb40-4"><a href="asignación-taxonómica.html#cb40-4" tabindex="-1"></a>taxa <span class="ot">&lt;-</span> <span class="fu">assignTaxonomy</span>(seqtab_nochim, classifier, <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">tryRC =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb40-5"><a href="asignación-taxonómica.html#cb40-5" tabindex="-1"></a></span>
-<span id="cb40-6"><a href="asignación-taxonómica.html#cb40-6" tabindex="-1"></a><span class="co"># Visualizar lo que se genero despues de la asignacion</span></span>
-<span id="cb40-7"><a href="asignación-taxonómica.html#cb40-7" tabindex="-1"></a>taxa_print <span class="ot">&lt;-</span> taxa</span>
-<span id="cb40-8"><a href="asignación-taxonómica.html#cb40-8" tabindex="-1"></a><span class="fu">rownames</span>(taxa_print) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb40-9"><a href="asignación-taxonómica.html#cb40-9" tabindex="-1"></a></span>
-<span id="cb40-10"><a href="asignación-taxonómica.html#cb40-10" tabindex="-1"></a><span class="fu">head</span>(taxa_print)</span>
-<span id="cb40-11"><a href="asignación-taxonómica.html#cb40-11" tabindex="-1"></a><span class="fu">dim</span>(taxa_print)</span></code></pre></div>
-<pre class="script-output"><code>        Kingdom            Phylum                  Class              Order
-1 1 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria o__Burkholderiales
-2 2 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria o__Burkholderiales
-3 3 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria o__Burkholderiales
-4 4 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria o__Burkholderiales
-5 5 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria o__Burkholderiales
-6 6 d__Bacteria              &lt;NA&gt;                   &lt;NA&gt;               &lt;NA&gt;
-                        Family Genus Species
-1 f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
-2 f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
-3 f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
-4 f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
-5 f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
-6                         &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;</code></pre>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r script-source"><code class="sourceCode r"><span id="cb93-1"><a href="asignación-taxonómica.html#cb93-1" tabindex="-1"></a><span class="co">#duración : aprox 7 min</span></span>
+<span id="cb93-2"><a href="asignación-taxonómica.html#cb93-2" tabindex="-1"></a></span>
+<span id="cb93-3"><a href="asignación-taxonómica.html#cb93-3" tabindex="-1"></a>classifier <span class="ot">&lt;-</span> <span class="st">&quot;greengenes2_trainset.fa.gz&quot;</span> </span>
+<span id="cb93-4"><a href="asignación-taxonómica.html#cb93-4" tabindex="-1"></a>taxa <span class="ot">&lt;-</span> <span class="fu">assignTaxonomy</span>(seqtab_nochim, classifier, <span class="at">multithread =</span> <span class="cn">TRUE</span>, <span class="at">tryRC =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb93-5"><a href="asignación-taxonómica.html#cb93-5" tabindex="-1"></a></span>
+<span id="cb93-6"><a href="asignación-taxonómica.html#cb93-6" tabindex="-1"></a><span class="co"># Visualizar lo que se genero despues de la asignacion</span></span>
+<span id="cb93-7"><a href="asignación-taxonómica.html#cb93-7" tabindex="-1"></a>taxa_print <span class="ot">&lt;-</span> taxa</span>
+<span id="cb93-8"><a href="asignación-taxonómica.html#cb93-8" tabindex="-1"></a><span class="fu">rownames</span>(taxa_print) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb93-9"><a href="asignación-taxonómica.html#cb93-9" tabindex="-1"></a></span>
+<span id="cb93-10"><a href="asignación-taxonómica.html#cb93-10" tabindex="-1"></a><span class="fu">head</span>(taxa_print)</span>
+<span id="cb93-11"><a href="asignación-taxonómica.html#cb93-11" tabindex="-1"></a><span class="fu">dim</span>(taxa_print)</span></code></pre></div>
+<pre class="script-output"><code>        Kingdom            Phylum                  Class
+1 1 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria
+2 2 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria
+3 3 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria
+4 4 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria
+5 5 d__Bacteria p__Pseudomonadota c__Gammaproteobacteria
+6 6 d__Bacteria              &lt;NA&gt;                   &lt;NA&gt;
+               Order                       Family Genus Species
+1 o__Burkholderiales f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
+2 o__Burkholderiales f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
+3 o__Burkholderiales f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
+4 o__Burkholderiales f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
+5 o__Burkholderiales f__Burkholderiaceae_A_595421  &lt;NA&gt;    &lt;NA&gt;
+6               &lt;NA&gt;                         &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;</code></pre>
 <pre class="script-output"><code>[1] 134   8</code></pre>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r script-source"><code class="sourceCode r"><span id="cb43-1"><a href="asignación-taxonómica.html#cb43-1" tabindex="-1"></a><span class="co"># Exportar objetos generados durante el preprocesamiento </span></span>
-<span id="cb43-2"><a href="asignación-taxonómica.html#cb43-2" tabindex="-1"></a><span class="fu">save</span>( errF, dadaFs, dadaRs,seqtab_nochim, taxa,</span>
-<span id="cb43-3"><a href="asignación-taxonómica.html#cb43-3" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;data.RData&quot;</span>)</span>
-<span id="cb43-4"><a href="asignación-taxonómica.html#cb43-4" tabindex="-1"></a><span class="fu">write.csv</span>(taxa, <span class="st">&quot;taxonomy.csv&quot;</span>)</span>
-<span id="cb43-5"><a href="asignación-taxonómica.html#cb43-5" tabindex="-1"></a><span class="fu">write.csv</span>(seqtab_nochim, <span class="st">&quot;table.csv&quot;</span>)</span>
-<span id="cb43-6"><a href="asignación-taxonómica.html#cb43-6" tabindex="-1"></a><span class="fu">write.csv</span>(stats, <span class="st">&quot;stats.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r script-source"><code class="sourceCode r"><span id="cb96-1"><a href="asignación-taxonómica.html#cb96-1" tabindex="-1"></a><span class="co"># Exportar objetos generados durante el preprocesamiento </span></span>
+<span id="cb96-2"><a href="asignación-taxonómica.html#cb96-2" tabindex="-1"></a><span class="fu">save</span>( errF, dadaFs, dadaRs,seqtab_nochim, taxa,</span>
+<span id="cb96-3"><a href="asignación-taxonómica.html#cb96-3" tabindex="-1"></a>      <span class="at">file =</span> <span class="st">&quot;data.RData&quot;</span>)</span>
+<span id="cb96-4"><a href="asignación-taxonómica.html#cb96-4" tabindex="-1"></a><span class="fu">write.csv</span>(taxa, <span class="st">&quot;taxonomy.csv&quot;</span>)</span>
+<span id="cb96-5"><a href="asignación-taxonómica.html#cb96-5" tabindex="-1"></a><span class="fu">write.csv</span>(seqtab_nochim, <span class="st">&quot;table.csv&quot;</span>)</span>
+<span id="cb96-6"><a href="asignación-taxonómica.html#cb96-6" tabindex="-1"></a><span class="fu">write.csv</span>(stats, <span class="st">&quot;stats.csv&quot;</span>)</span></code></pre></div>
 
 </div>
 </div>

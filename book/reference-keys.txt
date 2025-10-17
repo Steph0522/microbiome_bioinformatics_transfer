@@ -23,3 +23,7 @@ phylum
 class
 diversidad-alfa
 diversidad-beta
+pre-procesamiento
+diversidad-alpha
+diversidad-beta-1
+composición

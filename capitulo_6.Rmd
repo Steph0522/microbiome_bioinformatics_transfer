@@ -128,7 +128,81 @@ plot_ordination(ps.prop, ord.nmds.bray, color="Tipo", shape="Origen",title="Bray
 ord.nmds.jac <- ordinate(ps.prop, method="PCoA", distance="jaccard")
 plot_ordination(ps, ord.nmds.jac, color="Tipo", shape="Origen",title="Bray NMDS")
 ```
+## MicroBioMeta
+
+[MicroBioMeta](https://github.com/Steph0522/MicroBioMeta): Paquete en desarrollo para la exploración de datos de microbioma y metagenómicos.
+
+```{r, eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("Steph0522/MicroBioMeta")
+library(MicroBioMeta)
+```
+
+### Pre-procesamiento
+
+```{r}
+taxonomys <- taxa %>%
+  as.data.frame() %>%
+  tidyr::unite("taxonomy", Kingdom:Species, sep = ";")
+```
 
 
+```{r}
+tabla = merge_feature_taxonomy(t(seqtab.nochim), taxonomys)
+```
+
+
+### Diversidad alpha
+
+
+```{r, warning=FALSE}
+alpha_hill_plot(
+  table = tabla,
+  metadata = samdf,
+  x_col = "Tipo",
+  fill_col = "Tipo",
+  stat = "anova"
+) + theme(axis.text.x = element_blank(),
+          axis.ticks.x = element_blank())
+
+```
+
+## Diversidad beta
+
+```{r, warning=FALSE}
+beta_div_plot(
+  table = tabla,
+  metadata = samdf,
+  group_col = "Tipo",
+  shape_col = "Origen",
+  ordination = "PCoA",
+  distance = "aitchison"
+)
+```
+
+
+## Composición
+```{r, eval=FALSE}
+abundance_barplot(
+  table = tabla,
+  metadata = samdf,
+  level = "phylum",
+  top_n_groups = 10,
+  x_col = "Tipo",
+  facet_col = "Origen"
+)
+```
+```{r, warning=FALSE}
+abundance_heatmap_plot(
+  table = tabla,
+  metadata = samdf,
+  condition1 = "Origen",
+  condition2 = "Tipo",
+  top_n = 20,
+  cluster = TRUE,
+  show_column_names = FALSE
+)
+```
 
 
