@@ -27,3 +27,4 @@ pre-procesamiento
 diversidad-alpha
 diversidad-beta-1
 composición
+microbiometa

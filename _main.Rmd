@@ -1,0 +1,136 @@
+---
+title: 'Introducción práctica a la bioinformática de microbiotas en R y Rstudio'
+author: ""
+site: bookdown::bookdown_site
+documentclass: book
+url: 'https://comunidadbioinfo.github.io/templado_bookdown/'
+github-repo: "comunidadbioinfo/templado_bookdown"
+output:
+ bookdown::gitbook:
+  toc_depth: 3 
+  config:
+    sharing: null
+editor_options: 
+  markdown: 
+    wrap: 72
+bibliography: references.bib
+link-citations: yes
+---
+
+#  `r fontawesome::fa("book", fill=" #722F37")`  Prefacio {-}
+
+Placeholder
+
+
+## Objetivos del curso
+## Público a quien va dirigido
+## Pre-requisitos
+
+<!--chapter:end:index.Rmd-->
+
+
+# `r fontawesome::fa("book", fill="#722F37")` : Descargando las secuencias del NCBI
+
+Placeholder
+
+
+## Descargar secuencias con SRAtoolkit
+## Descargando secuencias ejemplo
+
+<!--chapter:end:capitulo_1.Rmd-->
+
+---
+bibliography: references.bib
+---
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Importar secuencias a Rstudio
+
+Ya habiendo descargado las secuencias vamos a importarlas a Rstudio.
+
+```{r, eval=TRUE}
+# Ajuste de rutas y directorio de trabajo
+# ruta que contiene los archivos fastq
+ruta_fastq <- "C:/Users/shere/Documents/microbiome_bioinformatics_transfer/Datos/seqs_transfer/"
+
+# Crear carpeta para guardar resultados y ajusta directorio de trabajo
+ruta_resultados <-"C:/Users/shere/Documents/microbiome_bioinformatics_transfer/resultados"
+setwd(ruta_resultados)
+
+fnFs <- sort(list.files(ruta_fastq, pattern = "_1.fastq.gz", full.names = TRUE))
+fnRs <- sort(list.files(ruta_fastq, pattern = "_2.fastq.gz", full.names = TRUE))
+```
+
+
+```{r}
+head(fnFs)
+```
+
+
+```{r}
+head(fnRs)
+```
+
+```{r, echo=FALSE}
+setwd("../")
+
+```
+
+
+<!--chapter:end:capitulo_2.Rmd-->
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Remoción de primers 
+
+Placeholder
+
+
+
+<!--chapter:end:capitulo_3.Rmd-->
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Flujo de trabajo de DADA2
+
+Placeholder
+
+
+## Filtrado y corte de secuencias
+## Modelo de error
+## Dereplicación
+## Inferencia de ASVs
+## Uniendo secuencias 
+## Remoción de quimeras
+## Estadísticos
+
+<!--chapter:end:capitulo_4.Rmd-->
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Asignación taxonómica
+
+Placeholder
+
+
+## Base de datos Greengenes2 
+## Asignación taxonómica
+
+<!--chapter:end:capitulo_5.Rmd-->
+
+
+# `r fontawesome::fa("book", fill=" #722F37")` : Análisis exploratorio
+
+Placeholder
+
+
+## Composición taxonómica
+### Phylum
+### Class
+## Diversidad alfa
+## Diversidad beta
+## MicroBioMeta
+### Pre-procesamiento
+### Diversidad alpha
+## Diversidad beta
+## Composición
+
+<!--chapter:end:capitulo_6.Rmd-->
+

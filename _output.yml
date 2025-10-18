@@ -4,6 +4,7 @@ bookdown::gitbook:
   config:
     toc:
       before: |
+        <li class="toc-logo"><img src="logo_uatx.png"></li>
         <li align="center"><b>MANUAL DEL TALLER</b></li>
     download: ["pdf", "epub"]
   fig_width: 8

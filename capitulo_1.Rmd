@@ -55,7 +55,7 @@ done < sra_ids.txt
 ```
 
 
-## Descargando Secuencias ejemplo
+## Descargando secuencias ejemplo
 
 - Lo primero que haremos será crear un directorio donde depositaremos los archivos de ejemplo.
 
