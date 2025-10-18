@@ -2,6 +2,8 @@
 
 # `r fontawesome::fa("book", fill=" #722F37")` : Análisis exploratorio
 
+## Phyloseq
+
 - Primero vamos  a cargar las librerías a usar
 
 ```{r, echo=FALSE}
@@ -49,14 +51,14 @@ ps
 
 ```
 
-## Composición taxonómica
+### Composición taxonómica
 
 ```{r}
 ps.prop <- transform_sample_counts(ps, function(OTU) OTU/sum(OTU))
 ```
 
 
-### Phylum
+#### Phylum
 
 ```{r}
 my_phyla <- tax_glom(ps.prop ,taxrank = "Phylum")
@@ -66,7 +68,7 @@ facet_grid(~Origen+Tipo, scales="free_x")+
 my_bar_phyla
 ```
 
-### Class
+#### Class
 
 ```{r}
 my_Class <- tax_glom(ps.prop ,taxrank = "Class")
@@ -76,7 +78,7 @@ facet_grid(~Origen+Tipo, scales="free_x")+
 my_bar_Class
 ```
 
-## Diversidad alfa
+### Diversidad alfa
 
 - Primero hacemos subconjuntos del origen
 
@@ -115,7 +117,7 @@ plot_richness(embrion, x="Tipo", measures=c("Observed","Shannon", "Simpson"), co
 ```
 
 
-## Diversidad beta
+### Diversidad beta
 
 ```{r}
 # Transformar la data  proporciones
@@ -128,6 +130,7 @@ plot_ordination(ps.prop, ord.nmds.bray, color="Tipo", shape="Origen",title="Bray
 ord.nmds.jac <- ordinate(ps.prop, method="PCoA", distance="jaccard")
 plot_ordination(ps, ord.nmds.jac, color="Tipo", shape="Origen",title="Bray NMDS")
 ```
+
 ## MicroBioMeta
 
 [MicroBioMeta](https://github.com/Steph0522/MicroBioMeta): Paquete en desarrollo para la exploración de datos de microbioma y metagenómicos.
@@ -153,6 +156,43 @@ tabla = merge_feature_taxonomy(t(seqtab.nochim), taxonomys)
 ```
 
 
+### Composición
+```{r,warning=FALSE}
+abundance_barplot(
+  table = tabla,
+  metadata = samdf %>% dplyr::rename("SAMPLEID"="ID"),
+  level = "phylum",
+  top_n_groups = 10,
+  x_col = "Tipo",
+  facet_col = "Origen"
+)+theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
+```
+
+```{r, warning=FALSE}
+abundance_barplot(
+  table = tabla,
+  metadata = samdf %>% dplyr::rename("SAMPLEID"="ID"),
+  level = "genus",
+  top_n_groups = 20,
+  x_col = "Tipo",
+  facet_col = "Origen",add_remained = TRUE,
+)+theme(axis.text.x = element_text(angle = 50, hjust = 0.95))
+```
+
+
+```{r, warning=FALSE}
+abundance_heatmap_plot(
+  table = tabla,
+  metadata = samdf,
+  condition1 = "Origen",
+  condition2 = "Tipo",
+  top_n = 20,
+  cluster = TRUE,
+  show_column_names = FALSE
+)
+```
+
+
 ### Diversidad alpha
 
 
@@ -168,7 +208,7 @@ alpha_hill_plot(
 
 ```
 
-## Diversidad beta
+### Diversidad beta
 
 ```{r, warning=FALSE}
 beta_div_plot(
@@ -182,27 +222,5 @@ beta_div_plot(
 ```
 
 
-## Composición
-```{r, eval=FALSE}
-abundance_barplot(
-  table = tabla,
-  metadata = samdf,
-  level = "phylum",
-  top_n_groups = 10,
-  x_col = "Tipo",
-  facet_col = "Origen"
-)
-```
-```{r, warning=FALSE}
-abundance_heatmap_plot(
-  table = tabla,
-  metadata = samdf,
-  condition1 = "Origen",
-  condition2 = "Tipo",
-  top_n = 20,
-  cluster = TRUE,
-  show_column_names = FALSE
-)
-```
 
 
